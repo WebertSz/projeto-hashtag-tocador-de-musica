@@ -5,6 +5,7 @@ const cover = document.getElementById("cover");
 const play = document.getElementById("play");
 const next = document.getElementById("next");
 const previous = document.getElementById("previous");
+const likeButton = document.getElementById("like");
 const currentProgress = document.getElementById("current-progress");
 const progressContainer = document.getElementById("progress-bar-container");
 const shuffleButton = document.getElementById("shuffle");
@@ -16,27 +17,30 @@ const oPassageiro = {
     songName : "O Passageiro",
     artist : "Capital Inicial",
     fileSong : "O Passageiro",
-    fileImg : "Capa de disco Capital Inicial Acústico MTV"
+    fileImg : "Capa de disco Capital Inicial Acústico MTV",
+    liked : false,
 };
 
 const oMundo = {
     songName : "O Mundo",
     artist : "Capital Inicial",
     fileSong : "O Mundo",
-    fileImg : "Capa de disco Capital Inicial Acústico MTV"
+    fileImg : "Capa de disco Capital Inicial Acústico MTV",
+    liked : false,
 };
 
 const todasAsNoites = {
     songName : "Todas as Noites",
     artist : "Capital Inicial",
     fileSong : "Todas as Noites",
-    fileImg : "Capa de disco Capital Inicial Acústico MTV"
+    fileImg : "Capa de disco Capital Inicial Acústico MTV",
+    liked : false,
 };
 
 let isPlaying = false;
 let isShuffled = false;
 let repeatOn = false;
-const originalPlaylist = [oPassageiro, oMundo, todasAsNoites];
+const originalPlaylist = JSON.parse(localStorage.getItem("playlist")) ?? [oPassageiro, oMundo, todasAsNoites];
 let sortedPlaylist = [...originalPlaylist];
 let index = 0;
 
@@ -68,6 +72,7 @@ function initializeSong(){
     song.src = `songs/${sortedPlaylist[index].fileSong}.mp3`;
     songName.innerText = sortedPlaylist[index].songName;
     bandName.innerText = sortedPlaylist[index].artist;
+    likeButtonRender();
 }
 
 function previousSong(){
@@ -163,6 +168,30 @@ function updateTotalTime(){
 
 }
 
+function likeButtonRender(){
+    if (sortedPlaylist[index].liked === true){
+        likeButton.querySelector(".bi").classList.remove("bi-heart");
+        likeButton.querySelector(".bi").classList.add("bi-heart-fill");
+        likeButton.classList.add("button-active");
+    }
+    else{
+        likeButton.querySelector(".bi").classList.remove("bi-heart-fill");
+        likeButton.querySelector(".bi").classList.add("bi-heart");
+        likeButton.classList.remove("button-active");
+    }
+}
+
+function likeButtonCliked(){
+    if(sortedPlaylist[index].liked === false){
+        sortedPlaylist[index].liked = true;
+    }
+    else{
+        sortedPlaylist[index].liked = false;
+    }
+    likeButtonRender();
+    localStorage.setItem("playlist", JSON.stringify(originalPlaylist));
+}
+
 initializeSong();
 
 play.addEventListener("click", playPauseDecider);
@@ -174,3 +203,4 @@ song.addEventListener("loadedmetadata", updateTotalTime);
 progressContainer.addEventListener("click", jumpTo);
 shuffleButton.addEventListener("click", shuffleButtonClicked);
 repeatButton.addEventListener("click", repeatButtonClicked);
+likeButton.addEventListener("click", likeButtonCliked);
